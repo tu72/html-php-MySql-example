@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>robot Control</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        .button-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 2px solid #000;
+        }
+        #lastInput {
+            grid-column: span 3;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="button-container">
+        <div></div>
+        <button onclick="saveButtonPress('forward')">forward</button>
+        <div></div>
+        <button onclick="saveButtonPress('left')">left</button>
+        <button onclick="saveButtonPress('stop')">stop</button>
+        <button onclick="saveButtonPress('right')">right</button>
+        <div></div>
+        <button onclick="saveButtonPress('backward')">backward</button>
+        <div></div>
+        <div id="lastInput">Last input </div>
+    </div>
+
+    <script>
+        function saveButtonPress(buttonName) {
+            const Request = new XMLHttpRequest();
+            Request.open("POST", "saveButtonPress.php", true);
+            Request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            Request.onreadystatechange = function () {
+                if (Request.readyState === 4 && Request.status === 200) {
+                    fetchLastInput();
+                }
+            };
+            Request.send("buttonName=" + buttonName);
+        }
+
+        function fetchLastInput() {
+            const Request = new XMLHttpRequest();
+            Request.open("GET", "fetchLastInput.php", true);
+            Request.onreadystatechange = function () {
+                if (Request.readyState === 4 && Request.status === 200) {
+                    document.getElementById("lastInput").innerText = "Last input: " + Request.responseText;
+                }
+            };
+            Request.send();
+        }
+
+        window.onload = fetchLastInput;
+    </script>
+</body>
+</html>
